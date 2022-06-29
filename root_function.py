@@ -3,7 +3,7 @@
 #"r" stands for 'range'
 #"p" stands for 'point'
 #"h" stands for hold
-#"d" stands for 'data'
+#"d" stands for 'data' or 'dictionary'
 #"v" for 'value'
 #"l" for 'level'
 #"trim" for trimmed
@@ -31,7 +31,7 @@ def root_func(Type_of_Simulation,Mode_of_Simulation,c_p_d,s_t_d,s_p_d,d_p_d,p_p_
 	
 
 
-	results = []
+
 	#+++++++++Time++++++++
 	start=tm.perf_counter()
 	#+++++++++Time++++++++
@@ -47,22 +47,14 @@ def root_func(Type_of_Simulation,Mode_of_Simulation,c_p_d,s_t_d,s_p_d,d_p_d,p_p_
 	N=1		#number of sweep steps
 	M=1		#Maximum Number of elements or nodes needed in each step of sweep
 	q=100
-
 	#Unit of time is pico second
 
-
+	results = []
 
 	start_time=s_t_d.get("start_time")
 	end_time=s_t_d.get("end_time")
 	resulution=s_t_d.get("resulution")
 	time=end_time-start_time
-
-	#===============IV Curve parmeters================
-	t=2000
-	amp_1=4
-	amp_2=0
-	#=================================================
-
 
 
 
