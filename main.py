@@ -34,7 +34,7 @@ c_p_d={"IC":f'{154}u',"RTYPE":f'{0}',"R0":f'{1.04}',"c":f'{0.1836/80}',"fp":f'{1
 s_t_d={"start_time":0,"end_time":20000,"resulution":1}
 
 #s_p_d: Simulation parameters dictionary
-s_p_d={"a":25,"s_r_1_d":5000,"s_r_1_u":6000,"s_r_2_d":0,"s_r_2_u":2}
+s_p_d={"a":250,"s_r_1_d":5000,"s_r_1_u":6000,"s_r_2_d":0,"s_r_2_u":2}
 
 #d_p_d: the way that data is processed. this dictionry is a set switches that can be used to have extra processes on result data. like taking the absolut value
 d_p_d={"abs":0,"target_frequency":11}

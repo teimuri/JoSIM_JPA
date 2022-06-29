@@ -5,77 +5,67 @@ import multiprocessing as mp
 import JOSIM_TOOLS.data_tools as data_tools
 
 def parallelize(s_l_1,s_l_1_v,s_r_2,s_2_p,labels,resulution,end_time,start_time,time,q,c_p_d,p_p_d,d_p_d,target_frequency,Type_of_Simulation,start):
-	#For dif_fft and some other functions
-	#new_lin=[[],[]]
+
 	print(f'{s_l_1_v}')
-	temp=np.zeros((2,len(labels)))
+	point_of_fft=np.zeros((len(labels)))
 
 	
 	for s_l_2,s_l_2_v in zip(s_r_2,s_2_p):
 
-		cir_filename=f'JOSIM_TEMP/test_josim-{s_l_1%30}.js'
+		temp_cir_filename=f'JOSIM_TEMP/test_josim-{s_l_1%30}.js'
 		data_filename=f'JOSIM_TEMP/test_josim-{s_l_1%30}.dat'
 
-		simulation(cir_filename,data_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d)
+		simulation(temp_cir_filename,data_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d)
 		#+++++++++Time++++++++
-		#end=tm.perf_counter()
-		#print(f'after simulation:{end-start}\n')
+		#print(f'after data process:{tm.perf_counter()-start}\n')
 		#+++++++++Time++++++++
 
-		trim_lin=[]
-		process_data(trim_lin,data_filename,time,resulution)
+
+		trim_lin=process_data(data_filename,time,resulution)
 
 		#+++++++++Time++++++++
-		#end=tm.perf_counter()
-		#print(f'after data process:{end-start}\n')
+		#print(f'after data process:{tm.perf_counter()-start}\n')
 		#+++++++++Time++++++++
 
 		#new_lin[s_l_2]=trim_lin
+		if 'fft' in Type_of_Simulation:
+			fft_result=data_tools.fft(trim_lin,labels,(time)/resulution,resulution,)
 		
-		a=data_tools.fft(trim_lin,labels,(time)/resulution,resulution,)
-		
-		if(Type_of_Simulation=="fft_s"):
-			temp[s_l_2]=data_tools.point_sweep(trim_lin,time,resulution,labels,target_frequency)
-		#print(f'{s_l_1_v}--{s_l_2_v}')
+		if'fft_s'==Type_of_Simulation:
+			point_of_fft=data_tools.point_sweep(trim_lin,time,resulution,labels,target_frequency)
 
-	#+++++++++Time++++++++	
-	#end=tm.perf_counter()
-	#print(f'after fft:{end-start}\n')
+	#+++++++++Time++++++++
+	#print(f'after data process:{tm.perf_counter()-start}\n')
 	#+++++++++Time++++++++	
 
-	#temp=data_tools.mean_finder(trim_lin,(time)/resulution,resulution,labels)
-	
+	#point_of_fft=data_tools.mean_finder(trim_lin,(time)/resulution,resulution,labels)
 	#data_tools.moving_ave(trim_lin,t,resulution,time,amp_2,amp_1)
-	if(Type_of_Simulation=='n'):
-		#write output to a file
-		#print(*trim_lin,file=fin_result_file,sep="\n")
+	
+	if Type_of_Simulation=='n':
 		answer=trim_lin
 		return answer
 
-	
-	elif(Type_of_Simulation=='fft'):
-		#write output to a file
-		
-		answer=a
+	elif Type_of_Simulation=='fft':
+		answer=fft_result
 		return answer
 
-	
-	elif(Type_of_Simulation=='fft_s'):
-		answer=temp[1]-temp[0]
+	elif Type_of_Simulation=='fft_s':
+		answer=point_of_fft
 		answer[0]=s_l_1_v
 		return answer
+	
 	return 0
 	
-		#return np.append(s_1_d_store,answer,axis=0)
 
 
-def simulation(cir_filename,data_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d):
-	write_cir(cir_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d)
-	os.system(f"./josim-cli {cir_filename}>{data_filename}")
+def simulation(temp_cir_filename,data_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d):
+	write_cir(temp_cir_filename,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d)
+	os.system(f"./josim-cli {temp_cir_filename}>{data_filename}")
 
 
-def process_data(trim_lin,data_filename,time,resulution):
+def process_data(data_filename,time,resulution):
 	#Raad the results
+
 	data_file = open(data_filename, "r")
 	lines = data_file.readlines()
 	data_file.close()
@@ -83,12 +73,13 @@ def process_data(trim_lin,data_filename,time,resulution):
 	#Deleting the extra word lines
 	del lines[0:int(len(lines)-(time)/resulution+1)]		
 
-	#Now all the results will be transferd to "trim_lin" array
-	
+	#Now all the results will be transferd to "data" array
+	result=[]
 	for string in lines:
 		string=string.split()
 		string=[float(i) for i in string]
-		trim_lin.append(string)
+		result.append(string)
+	return result
 	
 
 def write_cir(file_name,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,c_p_d):
@@ -103,7 +94,9 @@ def write_cir(file_name,s_l_1_v,s_l_2_v,labels,resulution,end_time,start_time,q,
 	fp=c_p_d.get("fp")
 	fs=c_p_d.get("fs")
 	RL=c_p_d.get("RL")
-	
+
+
+
 	cir.writelines([
 			f'\n.model jj1 jj(IC={IC},RTYPE={RTYPE},R0={R0},c={c}p)',
 			f'\n.include ../JOSIM_TOOLS/custom_elements.js',

@@ -107,13 +107,13 @@ def root_func(Type_of_Simulation,Mode_of_Simulation,c_p_d,s_t_d,s_p_d,d_p_d,p_p_
 	fin_result_file.close()
 	if(Type_of_Simulation=='n'):
 		data_tools.plotter(results[0],labels,p_p_d,d_p_d)
-		with open('test_josim_trimmed.dat' , 'wb') as f:
+		with open('test_josim_trimmed.dat' , 'w') as f:
 			np.savetxt(f, results[0], delimiter=' ', newline='\n', header='', footer='', comments='# ')
 		#print(*results[0],file=fin_result_file,sep="\n")
 
 	elif(Type_of_Simulation=='fft'):
 		data_tools.plotter(results[0],labels,p_p_d,d_p_d)
-		with open('test_josim_trimmed.dat' , 'wb') as f:
+		with open('test_josim_trimmed.dat' , 'w') as f:
 			np.savetxt(f, results[0], delimiter=' ', newline='\n', header='', footer='', comments='# ')
 		#print(*results[0],file=fin_result_file,sep="\n")
 
@@ -121,7 +121,7 @@ def root_func(Type_of_Simulation,Mode_of_Simulation,c_p_d,s_t_d,s_p_d,d_p_d,p_p_
 		results=np.array(results)
 		s_1_d_store=results.reshape(len(s_r_1),len(labels))
 		s_1_d_store=s_1_d_store[s_1_d_store[:,0].argsort()]
-		with open('test_josim_trimmed.dat' , 'wb') as f:
+		with open('test_josim_trimmed.dat' , 'w') as f:
 			np.savetxt(f, s_1_d_store, delimiter=' ', newline='\n', header='', footer='', comments='# ')
 		#' '.join(map(str, s_1_d_store))
 		#print(*s_1_d_store,file=fin_result_file,sep="\n")
